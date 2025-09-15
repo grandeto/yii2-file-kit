@@ -50,7 +50,7 @@ There are several ways to configure `trntv\filekit\Storage` to work with `flysys
 'fileStorage'=>[
     ...
     'filesystem'=> function() {
-        $adapter = new \League\Flysystem\Adapter\Local('some/path/to/storage');
+        $adapter = new \League\Flysystem\Local\LocalFilesystemAdapter('some/path/to/storage');
         return new League\Flysystem\Filesystem($adapter);
     }
 ]

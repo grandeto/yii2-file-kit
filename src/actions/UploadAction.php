@@ -1,9 +1,8 @@
 <?php
 namespace trntv\filekit\actions;
 
-use League\Flysystem\FilesystemInterface;
+use League\Flysystem\FilesystemOperator;
 use trntv\filekit\events\UploadEvent;
-use League\Flysystem\File as FlysystemFile;
 use Yii;
 use yii\base\DynamicModel;
 use yii\helpers\Html;
@@ -182,13 +181,11 @@ class UploadAction extends BaseAction
     {
         $file = null;
         $fs = $this->getFileStorage()->getFilesystem();
-        if ($fs instanceof FilesystemInterface) {
-            $file = new FlysystemFile($fs, $path);
-        }
+        // Flysystem v3 does not provide a File wrapper; provide filesystem and path, file left null.
         $this->trigger(self::EVENT_AFTER_SAVE, new UploadEvent([
             'path' => $path,
             'filesystem' => $fs,
-            'file' => $file
+            'file' => null
         ]));
     }
 

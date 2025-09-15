@@ -18,7 +18,6 @@ class StorageTest extends TestCase
         ]);
 
         $this->assertNotNull($storage->getFilesystem());
-
     }
 
     public function testInitWithComponent()
@@ -27,7 +26,7 @@ class StorageTest extends TestCase
         $this->mockApplication([
             'components' => [
                 'fs' => [
-                    'class' => 'creocoder\flysystem\LocalFilesystem',
+                    'class' => 'trntv\filekit\tests\data\TmpFilesystemBuilder',
                     'path' => sys_get_temp_dir()
                 ]
             ]
@@ -37,6 +36,6 @@ class StorageTest extends TestCase
         ]);
 
         $this->assertNotNull($storage->getFilesystem());
-        $this->assertInstanceOf("creocoder\\flysystem\\LocalFilesystem", $storage->getFilesystem());
+        $this->assertInstanceOf("\\League\\Flysystem\\FilesystemOperator", $storage->getFilesystem());
     }
 }

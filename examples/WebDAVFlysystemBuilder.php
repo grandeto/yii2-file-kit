@@ -55,7 +55,8 @@ class WebDAVFlysystemBuilder implements FilesystemBuilderInterface
         $flysystem = new Filesystem($adapter);
 
         if (!$flysystem->has($this->pathPrefix)) {
-            $flysystem->createDir($this->pathPrefix);
+            // v3: check existence then create directory
+            $flysystem->createDirectory($this->pathPrefix);
         }
         $adapter->setPathPrefix($this->pathPrefix);
 

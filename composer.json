@@ -21,8 +21,7 @@
         "rmrevin/yii2-fontawesome": "^3.4"
     },
     "require-dev": {
-        "phpunit/phpunit": "~4.5.0",
-        "creocoder/yii2-flysystem": "~0.8"
+        "phpunit/phpunit": "~4.5.0"
     },
     "autoload": {
         "psr-4": { "trntv\\filekit\\": "src/" }

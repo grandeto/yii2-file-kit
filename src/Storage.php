@@ -2,7 +2,7 @@
 namespace trntv\filekit;
 
 use Yii;
-use League\Flysystem\FilesystemInterface;
+use League\Flysystem\FilesystemOperator;
 use trntv\filekit\events\StorageEvent;
 use trntv\filekit\filesystem\FilesystemBuilderInterface;
 use yii\base\Component;
@@ -94,7 +94,7 @@ class Storage extends Component
     }
 
     /**
-     * @return FilesystemInterface
+     * @return FilesystemOperator
      * @throws InvalidConfigException
      */
     public function getFilesystem()
@@ -134,7 +134,7 @@ class Storage extends Component
                     $fileObj->getExtension()
                 ]);
                 $path = implode(DIRECTORY_SEPARATOR, array_filter([$pathPrefix, $dirIndex, $filename]));
-            } while ($this->getFilesystem()->has($path));
+            } while ($this->getFilesystem()->fileExists($path));
         } else {
             $filename = $fileObj->getPathInfo('filename');
             $path = implode(DIRECTORY_SEPARATOR, array_filter([$pathPrefix, $dirIndex, $filename]));
@@ -156,10 +156,12 @@ class Storage extends Component
 
         $config = array_merge(['ContentType' => $fileObj->getMimeType()], $defaultConfig, $config);
 
-        if ($overwrite) {
-            $success = $this->getFilesystem()->putStream($path, $stream, $config);
+        $fs = $this->getFilesystem();
+        if (!$overwrite && $fs->fileExists($path)) {
+            $success = false;
         } else {
-            $success = $this->getFilesystem()->writeStream($path, $stream, $config);
+            // use writeStream (v3)
+            $success = $fs->writeStream($path, $stream, $config);
         }
 
         if (is_resource($stream)) {
@@ -196,10 +198,11 @@ class Storage extends Component
      */
     public function delete($path)
     {
-        if ($this->getFilesystem()->has($path)) {
-            $this->beforeDelete($path, $this->getFilesystem());
-            if ($this->getFilesystem()->delete($path)) {
-                $this->afterDelete($path, $this->getFilesystem());
+        $fs = $this->getFilesystem();
+        if ($fs->fileExists($path)) {
+            $this->beforeDelete($path, $fs);
+            if ($fs->delete($path)) {
+                $this->afterDelete($path, $fs);
                 return true;
             };
         }
@@ -231,15 +234,18 @@ class Storage extends Component
             $normalizedPath = $path . DIRECTORY_SEPARATOR . '.dirindex';
         }
 
-        if (!$this->getFilesystem()->has($normalizedPath)) {
-            $this->getFilesystem()->write($normalizedPath, (string)$this->dirindex);
+        $fs = $this->getFilesystem();
+        if (!$fs->fileExists($normalizedPath)) {
+            $fs->write($normalizedPath, (string)$this->dirindex);
         } else {
-            $this->dirindex = $this->getFilesystem()->read($normalizedPath);
+            $this->dirindex = $fs->read($normalizedPath);
             if ($this->maxDirFiles !== -1) {
-                $filesCount = count($this->getFilesystem()->listContents($this->dirindex));
+                // listContents returns iterable in v3
+                $contents = iterator_to_array($fs->listContents($this->dirindex));
+                $filesCount = count($contents);
                 if ($filesCount > $this->maxDirFiles) {
                     $this->dirindex++;
-                    $this->getFilesystem()->put($normalizedPath, (string)$this->dirindex);
+                    $fs->write($normalizedPath, (string)$this->dirindex);
                 }
             }
         }

@@ -28,7 +28,9 @@ class AwsS3v3FlysystemBuilder extends BaseObject implements FilesystemBuilderInt
             'version' => 'latest',
         ]);
 
-        $adapter = new League\Flysystem\AwsS3v3\AwsS3Adapter($client, 'your-bucket-name');
+        // Flysystem v3 AWS S3 adapter namespace / classname depends on the adapter package;
+        // common package provides AwsS3V3\AwsS3Adapter (adjust if your adapter differs)
+        $adapter = new \League\Flysystem\AwsS3V3\AwsS3Adapter($client, 'your-bucket-name');
         $filesystem = new Filesystem($adapter);
 
         return $filesystem;

@@ -18,7 +18,7 @@ class UploadEvent extends Event
      */
     public $path;
     /**
-     * @var \League\Flysystem\File|null
+     * @var mixed|null File object is not provided by Flysystem v3; use filesystem read/write methods instead
      */
     public $file;
 }

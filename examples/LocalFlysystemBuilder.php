@@ -1,6 +1,6 @@
 <?php
 
-use League\Flysystem\Adapter\Local;
+use League\Flysystem\Local\LocalFilesystemAdapter;
 use League\Flysystem\Filesystem;
 use yii\base\BaseObject;
 
@@ -21,7 +21,7 @@ class LocalFilesystemBuilder extends BaseObject implements \trntv\filekit\filesy
      */
     public function build()
     {
-        $adapter = new Local(\Yii::getAlias($this->path));
+        $adapter = new LocalFilesystemAdapter(\Yii::getAlias($this->path));
         return new Filesystem($adapter);
     }
 }
