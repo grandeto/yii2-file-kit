@@ -16,7 +16,7 @@
     "minimum-stability": "stable",
     "require": {
         "yiisoft/yii2-jui": "^2.0.0",
-        "league/flysystem": "^1.0",
+        "league/flysystem": "^3.0",
         "npm-asset/blueimp-file-upload": "^9.7.0",
         "rmrevin/yii2-fontawesome": "^3.4"
     },
